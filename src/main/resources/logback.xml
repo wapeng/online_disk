@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <property name="log.dir" value="E:\data\logs" />
+    
+	<!-- stdout appender -->
+	<appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">
+	    <filter class="ch.qos.logback.classic.filter.LevelFilter">
+	      <level>DEBUG</level>
+	    </filter>	
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <Pattern>%-21(%date{yyyy-MM-dd HH:mm:ss}) %-5level %logger{80} - %msg%n</Pattern>
+        </layout>
+	</appender>
+	
+	<appender name="all_log" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <Pattern>%-21(%date{yyyy-MM-dd HH:mm:ss}) %-5level %logger{80} - %msg%n</Pattern>
+        </layout>
+        
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+	    	<FileNamePattern>${log.dir}/all.%d{yyyy-MM-dd}.log</FileNamePattern>	
+	    	<maxHistory>30</maxHistory>
+        </rollingPolicy>
+	</appender>
+	
+	<!--action appender local-->
+	<appender name="action_log" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <Pattern>%-21(%date{yyyy-MM-dd HH:mm:ss}) %-5level %logger{80} - %msg%n</Pattern>
+        </layout>
+        
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+	    	<FileNamePattern>${log.dir}/action.%d{yyyy-MM-dd}.log</FileNamePattern>	
+	    	<maxHistory>30</maxHistory>
+        </rollingPolicy>
+	</appender>
+	
+	<!--service appender local-->
+	<appender name="service_log" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <Pattern>%-21(%date{yyyy-MM-dd HH:mm:ss}) %-5level %logger{80} - %msg%n</Pattern>
+        </layout>
+        
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+	    	<FileNamePattern>${log.dir}/service.%d{yyyy-MM-dd}.log</FileNamePattern>	
+	    	<maxHistory>30</maxHistory>
+        </rollingPolicy>
+	</appender>
+	
+	<!-- 文件输出日志 ，过滤error ,按天分割 -->
+	<appender name="error_log"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<filter class="ch.qos.logback.classic.filter.LevelFilter">
+			<level>ERROR</level>
+			<OnMismatch>DENY</OnMismatch>
+			<OnMatch>ACCEPT</OnMatch>
+		</filter>
+		<File>${log.dir}/error.log</File>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<FileNamePattern>${log.dir}/error.%d{yyyy-MM-dd}.log
+			</FileNamePattern>
+		</rollingPolicy>
+		<layout class="ch.qos.logback.classic.PatternLayout">
+			<Pattern>%date{yyyy-MM-dd HH:mm:ss:SSS}|-%-5level-|UserAgent=[%X{req.userAgent}],SourceIP=[%X{req.xForwardedFor}],%msg%n</Pattern>
+		</layout>
+	</appender>
+
+    <logger name="com.mybatis" level="ERROR"/>
+	<logger name="java.sql.Connection" level="ERROR"/>
+	<logger name="java.sql.Statement" level="ERROR"/>
+	<logger name="java.sql.PreparedStatement" level="ERROR"/>
+	<logger name="java.sql.ResultSet" level="ERROR"/>
+	<logger name="com.google.code.yanf4j.core.impl" level="ERROR"/>
+
+	<logger name="allLogger">
+		<level value="INFO" />
+		<appender-ref ref="all_log" />
+	</logger>
+	
+	<logger name="actionLogger">
+		<level value="INFO" />
+		<appender-ref ref="action_log" />
+	</logger>
+	
+	<logger name="serviceLogger">
+		<level value="INFO" />
+		<appender-ref ref="service_log" />
+	</logger>
+	
+	<root level="INFO">
+		<appender-ref ref="stdout" />
+		<appender-ref ref="all_log" />
+		<appender-ref ref="error_log" />	
+	</root>
+	
+	
+	<logger name="com.ibatis" level="DEBUG" />    
+	<logger name="com.ibatis.common.jdbc.SimpleDataSource" level="DEBUG" />    
+	<logger name="com.ibatis.common.jdbc.ScriptRunner" level="DEBUG" />    
+	<logger name="com.ibatis.sqlmap.engine.impl.SqlMapClientDelegate" level="DEBUG" />    
+	<logger name="java.sql.Connection" level="DEBUG" />    
+	<logger name="java.sql.Statement" level="DEBUG" />    
+	<logger name="java.sql.PreparedStatement" level="DEBUG" />  
+	
+</configuration>
