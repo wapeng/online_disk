@@ -9,4 +9,5 @@ public interface Constant {
 
 	final static String OPT_IN = "in";
 	final static String OPT_OUT = "out";
+	
 }

@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.online.disk.dao.OnlineFileMapper" >
+  <resultMap id="BaseResultMap" type="com.online.disk.model.OnlineFile" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="file_name" property="fileName" jdbcType="VARCHAR" />
+    <result column="parent_id" property="parentId" jdbcType="BIGINT" />
+    <result column="file_type" property="fileType" jdbcType="INTEGER" />
+    <result column="file_size" property="fileSize" jdbcType="BIGINT" />
+    <result column="last_modify" property="lastModify" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, file_name, parent_id, file_type, file_size, last_modify
+  </sql>
+  <sql id="search">
+  	<where>
+  		<if test="parentId != null and parentId != ''">
+  			parent_id = #{parentId}
+  		</if>
+  	</where>
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from online_file
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from online_file
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.online.disk.model.OnlineFile" >
+    insert into online_file (file_name, parent_id, 
+      file_type, file_size, last_modify
+      )
+    values (#{fileName,jdbcType=VARCHAR}, #{parentId,jdbcType=BIGINT}, 
+      #{fileType,jdbcType=INTEGER}, #{fileSize,jdbcType=BIGINT}, #{lastModify,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.online.disk.model.OnlineFile" >
+    insert into online_file
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="fileName != null" >
+        file_name,
+      </if>
+      <if test="parentId != null" >
+        parent_id,
+      </if>
+      <if test="fileType != null" >
+        file_type,
+      </if>
+      <if test="fileSize != null" >
+        file_size,
+      </if>
+      <if test="lastModify != null" >
+        last_modify,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="fileName != null" >
+        #{fileName,jdbcType=VARCHAR},
+      </if>
+      <if test="parentId != null" >
+        #{parentId,jdbcType=BIGINT},
+      </if>
+      <if test="fileType != null" >
+        #{fileType,jdbcType=INTEGER},
+      </if>
+      <if test="fileSize != null" >
+        #{fileSize,jdbcType=BIGINT},
+      </if>
+      <if test="lastModify != null" >
+        #{lastModify,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.online.disk.model.OnlineFile" >
+    update online_file
+    <set >
+      <if test="fileName != null" >
+        file_name = #{fileName,jdbcType=VARCHAR},
+      </if>
+      <if test="parentId != null" >
+        parent_id = #{parentId,jdbcType=BIGINT},
+      </if>
+      <if test="fileType != null" >
+        file_type = #{fileType,jdbcType=INTEGER},
+      </if>
+      <if test="fileSize != null" >
+        file_size = #{fileSize,jdbcType=BIGINT},
+      </if>
+      <if test="lastModify != null" >
+        last_modify = #{lastModify,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.online.disk.model.OnlineFile" >
+    update online_file
+    set file_name = #{fileName,jdbcType=VARCHAR},
+      parent_id = #{parentId,jdbcType=BIGINT},
+      file_type = #{fileType,jdbcType=INTEGER},
+      file_size = #{fileSize,jdbcType=BIGINT},
+      last_modify = #{lastModify,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <select id="querys" parameterType="java.util.Map" resultMap="BaseResultMap">
+  	select * from online_file 
+  	<include refid="search" />
+  </select>
+</mapper>

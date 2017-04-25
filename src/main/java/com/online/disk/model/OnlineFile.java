@@ -3,86 +3,63 @@ package com.online.disk.model;
 import java.util.Date;
 
 public class OnlineFile {
-	
-	private String fileName;
-	private String icon;
-	private Long fileSize;
-	private String filePath;
-	private Boolean isFile;
-	private String fileSuffix;
-	private Date lastModifyTime;
-	
-	public OnlineFile(){}
+    private Long id;
 
-	public OnlineFile(String fileName, Long fileSize, String filePath,
-			Boolean isFile, String fileSuffix, Date lastModifyTime) {
-		super();
-		this.fileName = fileName;
-		this.fileSize = fileSize;
-		this.filePath = filePath;
-		this.isFile = isFile;
-		this.fileSuffix = fileSuffix;
-		this.lastModifyTime = lastModifyTime;
-	}
-	
-	private void format(){
-		
-	}
+    private String fileName;
 
+    private Long parentId;
 
-	public String getFileName() {
-		return fileName;
-	}
+    private Integer fileType;
 
-	public void setFileName(String fileName) {
-		this.fileName = fileName;
-	}
+    private Long fileSize;
 
-	public Long getFileSize() {
-		return fileSize;
-	}
+    private Date lastModify;
 
-	public void setFileSize(Long fileSize) {
-		this.fileSize = fileSize;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public String getFilePath() {
-		return filePath;
-	}
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-	public void setFilePath(String filePath) {
-		this.filePath = filePath;
-	}
+    public String getFileName() {
+        return fileName;
+    }
 
-	public Boolean getIsFile() {
-		return isFile;
-	}
+    public void setFileName(String fileName) {
+        this.fileName = fileName == null ? null : fileName.trim();
+    }
 
-	public void setIsFile(Boolean isFile) {
-		this.isFile = isFile;
-	}
+    public Long getParentId() {
+        return parentId;
+    }
 
-	public String getFileSuffix() {
-		return fileSuffix;
-	}
+    public void setParentId(Long parentId) {
+        this.parentId = parentId;
+    }
 
-	public void setFileSuffix(String fileSuffix) {
-		this.fileSuffix = fileSuffix;
-	}
+    public Integer getFileType() {
+        return fileType;
+    }
 
-	public Date getLastModifyTime() {
-		return lastModifyTime;
-	}
+    public void setFileType(Integer fileType) {
+        this.fileType = fileType;
+    }
 
-	public void setLastModifyTime(Date lastModifyTime) {
-		this.lastModifyTime = lastModifyTime;
-	}
+    public Long getFileSize() {
+        return fileSize;
+    }
 
-	public String getIcon() {
-		return icon;
-	}
+    public void setFileSize(Long fileSize) {
+        this.fileSize = fileSize;
+    }
 
-	public void setIcon(String icon) {
-		this.icon = icon;
-	}
+    public Date getLastModify() {
+        return lastModify;
+    }
+
+    public void setLastModify(Date lastModify) {
+        this.lastModify = lastModify;
+    }
 }

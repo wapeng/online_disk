@@ -29,15 +29,15 @@
 			</thead>
 			<tbody>
 				<tr>
-					<td><a href="#" onclick="toPath('${parentPath}','false','out')"><span class="glyphicon glyphicon-user"></span>返回上一级</a></td>
+					<td><a href="#" onclick="toPath('${fatherFileId}','','out')"><span class="glyphicon glyphicon-user"></span>返回上一级</a></td>
 					<td></td>
 					<td></td>
 				</tr>
 				<c:forEach items="${list}" var="item">
 					<tr>
-						<td><a href="#" onclick="toPath('${item.filePath}','${item.isFile}','in')"><span class="glyphicon glyphicon-user"></span><c:out value="${item.fileName}" /></a></td>
+						<td><a href="#" onclick="toPath('${item.id}','${item.fileType}','in')"><span class="glyphicon glyphicon-user"></span><c:out value="${item.fileName}" /></a></td>
 						<td><c:out value="${item.fileSize}" /></td>
-						<td><fmt:formatDate value="${item.lastModifyTime}" pattern="yyyy-MM-dd HH:mm:ss" /></td>
+						<td><fmt:formatDate value="${item.lastModify}" pattern="yyyy-MM-dd HH:mm:ss" /></td>
 					</tr>
 				</c:forEach>
 			</tbody>
@@ -55,8 +55,8 @@
 		}
 	});
 	
-	function toPath(filePath,isFile,pro){
-		var url = path + "/file/toPath?path=" + filePath + "&isFile=" + isFile + "&pro=" + pro;
+	function toPath(id,fileType,pro){
+		var url = path + "/file/toPath?id=" + id + "&fileType=" + fileType + "&cmd=" + pro;
 		window.location.href=encodeURI(url);
 	}
 </script>

@@ -3,11 +3,13 @@ package com.online.disk.controller;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.sql.Date;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
@@ -24,9 +26,11 @@ import sun.misc.BASE64Encoder;
 
 import com.mysql.jdbc.StringUtils;
 import com.online.disk.common.Constant;
+import com.online.disk.common.FileType;
 import com.online.disk.model.DiskFile;
 import com.online.disk.model.OnlineFile;
 import com.online.disk.service.DiskFileService;
+import com.online.disk.service.OnlineFileService;
 import com.online.disk.util.FileComparator;
 import com.online.disk.util.QEncodeUtil;
 
@@ -35,8 +39,10 @@ import com.online.disk.util.QEncodeUtil;
 @RequestMapping("/file")
 public class FileController extends BaseController{
 	private String key = "123456";
+//	@Autowired
+//	private DiskFileService diskFileService;
 	@Autowired
-	private DiskFileService diskFileService;
+	private OnlineFileService onlineFileService;
 	
 	@RequestMapping("/toUpload")
 	public String toUpLoad(){
@@ -74,56 +80,54 @@ public class FileController extends BaseController{
 		diskFile.setFileName(fileName);
 		diskFile.setFilePath(savePath);
 		diskFile.setFileSuffix(fileName.substring(fileName.lastIndexOf(".")));
-		diskFileService.addFile(diskFile);
+//		diskFileService.addFile(diskFile);
 		
 		DecimalFormat fromat = new DecimalFormat("#.#");
 		logger.info("文件大小:" + fromat.format(sizeMb) + "Mb, 用时:" + fromat.format(timeMi) + "秒, 平均速度:" + fromat.format(speed) + "M/s");
 		return "success";
 	}
-
-//	/**
-//	 * 进入根目录
-//	 * @return
-//	 */
-//	@RequestMapping("/toRootPath")
-//	public ModelAndView toPath(){
-//		ModelAndView mv = new ModelAndView("/file_list");
-//		List<OnlineFile> list = new ArrayList<OnlineFile>();
-//		list = this.listFile("/data/file");
-//		Collections.sort(list, new FileComparator());
-//		mv.addObject("list", list);
-//		return mv;
-//	}
 	
+	@RequestMapping("/addDic")
+	public ModelAndView addDic(@RequestParam(value = "parentId", required = true) long parentId,
+			@RequestParam(value = "fileName", required = false) String fileName){
+		ModelAndView mv = new ModelAndView("/file_list");
+		OnlineFile file = new OnlineFile();
+		file.setParentId(parentId);
+		file.setFileName(fileName);
+		file.setFileType(FileType.DIRECTORY.getValue());
+		file.setLastModify(new Date());
+		onlineFileService.addFile(file);
+		
+		List<OnlineFile> list = this.listFile(parentId);
+		mv.addObject("list", list);
+		return mv;
+	}
+
 	@RequestMapping("/toPath")
-	public ModelAndView toPath(@RequestParam(value = "path", required = false) String path,
-			@RequestParam(value = "isFile", required = false) Boolean isFile, 
-			@RequestParam(value = "pro", required = false) String process){
+	public ModelAndView toPath(@RequestParam(value = "id", required = false) String fileId,
+			@RequestParam(value = "fileType", required = false) String fileType,
+			@RequestParam(value = "cmd", required = false) String cmd){
 		List<OnlineFile> list = new ArrayList<OnlineFile>();
 		ModelAndView mv = new ModelAndView("/file_list");
-		if(StringUtils.isNullOrEmpty(path)){
-//			path = "/data/file";
-			path = "F:\\";
-		}else{
-			path = StringEscapeUtils.escapeJava(path);
+		if(StringUtils.isNullOrEmpty(fileId)){
+			fileId = "-1";
 		}
-		if(StringUtils.isNullOrEmpty(process)){
-			process = Constant.OPT_IN;
+		if(StringUtils.isNullOrEmpty(cmd)){
+			cmd = Constant.OPT_IN;
 		}
-		if(isFile == null){
-			isFile = false;
-		}
-		if(Constant.OPT_IN.equals(process)){
-			if(isFile){
+		if(Constant.OPT_IN.equals(cmd)){
+			if(StringUtils.isNullOrEmpty(fileType)){
+				list = this.listFile(Long.valueOf(fileId));
+			}else if(FileType.DIRECTORY.getValue() == Integer.parseInt(fileType)){
 				
 			}else{
-				list = this.listFile(path);
+				list = this.listFile(Long.valueOf(fileId));
 			}
-		}else if(Constant.OPT_OUT.equals(process)){
-			
+		}else if(Constant.OPT_OUT.equals(cmd)){
+			OnlineFile thisFile = onlineFileService.selectById(Long.parseLong(fileId));
+			list = this.listFile(thisFile.getParentId());
 		}
-		Collections.sort(list, new FileComparator());
-		mv.addObject("parentPath", StringEscapeUtils.escapeJava(path));
+		mv.addObject("fatherFileId", fileId);
 		mv.addObject("list", list);
 		return mv;
 	}
@@ -133,25 +137,11 @@ public class FileController extends BaseController{
 	 * @param path
 	 * @return
 	 */
-	private List<OnlineFile> listFile(String path){
-		List<OnlineFile> list = new ArrayList<OnlineFile>();
-		File root = new File(path);
-		if(root.exists() && root.isDirectory()){
-			File[] files = root.listFiles();
-			//文件夹列表
-			for(File file : files){
-				String fileName = file.getName();
-				Long fileSize = null;
-				boolean isFile = file.isFile();
-				String filePath = file.getAbsolutePath();
-				String fileSuffix = null;
-				if(isFile){
-					fileSize = file.length();
-					fileSuffix = fileName.substring(fileName.lastIndexOf("."));
-				}
-				list.add(new OnlineFile(fileName, fileSize, StringEscapeUtils.escapeJava(filePath), isFile, fileSuffix, new Date(file.lastModified())));
-			}
-		}
+	private List<OnlineFile> listFile(long fileId){
+		Map<String, Object> param = new HashMap<String, Object>();
+		param.put("parentId", fileId);
+		List<OnlineFile> list = onlineFileService.querys(param);
+		Collections.sort(list, new FileComparator());
 		return list;
 	}
 	

@@ -1,5 +1,7 @@
 package com.online.disk.util;
 
+import java.io.File;
+
 public class FiltUtil {
 	
 	/**
@@ -15,5 +17,4 @@ public class FiltUtil {
 			return path1 + "/" + path2;
 		}
 	}
-
 }
